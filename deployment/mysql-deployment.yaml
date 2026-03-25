@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
+  namespace: capsule-ns
 spec:
   replicas: 1
   selector:
@@ -17,26 +18,20 @@ spec:
         image: mysql:8.0
         ports:
         - containerPort: 3306
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: "rootpassword"
-        - name: MYSQL_DATABASE
-          value: "capsule_db"
-        - name: MYSQL_USER
-          value: "capsule_user"
-        - name: MYSQL_PASSWORD
-          value: "capsule_password"
+        envFrom:
+        - configMapRef:
+            name: retail-config
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql
       volumes:
-      - name: mysql-storage
-        emptyDir: {}
+      
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mysql-service
+  namespace: capsule-ns
 spec:
   selector:
     app: mysql

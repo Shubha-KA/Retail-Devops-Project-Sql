@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capsule-app
+  namespace: capsule-ns
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: capsule-app
+  template:
+    metadata:
+      labels:
+        app: capsule-app
+    spec:
+      containers:
+      - name: capsule-app
+        image: lijazs/retail-devops-project:v1.0.0
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        envFrom:
+          - configMapRef:
+              name: retail-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: capsule-service
+  namespace: capsule-ns
+spec:
+  selector:
+    app: capsule-app
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: ClusterIP
