@@ -18,9 +18,11 @@ spec:
         image: mysql:8.0
         ports:
         - containerPort: 3306
-        envFrom:
-        - configMapRef:
-            name: retail-config
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: rootpassword
+          - name: MYSQL_DATABASE
+            value: capsule_db
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql
